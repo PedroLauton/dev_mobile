@@ -1,13 +1,12 @@
-// Verifica se foi passado um argumento (nome ou ID do Pokémon)
+// Verifica se foi passado um argumento
 const pokemon = process.argv[2];
 
 // Se não tiver argumento, mostra uma mensagem de uso
 if (!pokemon) {
   console.log('Por favor, informe o nome ou ID de um Pokémon.');
-  process.exit(1); // Encerra o script com erro
+  process.exit(1);
 }
 
-// Função para capitalizar a primeira letra do nome
 const capitalize = (text: string): string =>
   text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -27,7 +26,7 @@ async function fetchPokemonInfo(pokemonIdOrName: string): Promise<void> {
 
     const data = await response.json();
 
-    // Converte altura e peso (API retorna em decímetros e hectogramas)
+    // Converte altura e peso
     const alturaMetros = data.height / 10;
     const pesoKg = data.weight / 10;
     const tipos = data.types.map((t: any) => capitalize(t.type.name)).join(', ');

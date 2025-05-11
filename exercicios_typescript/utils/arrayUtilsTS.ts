@@ -25,7 +25,7 @@ export const groupBy = <TipoGenerico extends Record<string, any>>(arr: TipoGener
   
 // sumBy([{valor:10},{valor:5}], 'valor') → 15
 // Soma os valores de uma determinada chave em todos os objetos do array 
-// Assim como na função origina, essa soma todos os valores de um array, seja numérico ou não
+// Assim como na função original, essa soma todos os valores de um array, seja numérico ou não
 export const sumBy = <TipoGenerico>(arr: TipoGenerico[], key: keyof TipoGenerico): number | string => {
     // A primeira verificação obtém o valor do primeiro objeto no array (arr[0]) na chave especificada ('key').
     // Isso ajuda a definir se o valor inicial será numérico ou string, dependendo do tipo de dado encontrado.
