@@ -1,18 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Pokedex.css";
-
-// Definindo o tipo com base no json para simplificar a implementação
-type Pokemon = {
-  name: string;
-  height: number;
-  weight: number;
-  sprites: {
-    front_default: string | null;
-  };
-  types: Array<{
-    type: { name: string };
-  }>;
-};
+import { PokeCard } from "./PokeCard.tsx";
+import type { Pokemon } from "../types/Pokemon.tsx";
 
 export default function Pokedex() {
   const [nome, setNome] = useState("");
@@ -20,7 +9,7 @@ export default function Pokedex() {
 
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [erro, setErro] = useState("");
-
+  const [pokemonsList, setPokemonList] = useState<Pokemon[]>([]);
   const buscarPokemon = async () => {
     if (!nome.trim()) return;
 
@@ -36,13 +25,21 @@ export default function Pokedex() {
 
       // Convertemos o JSON dizendo ao TS que ele tem formato Pokemon 
       const dados: Pokemon = await resposta.json();
+
       setPokemon(dados);
+      setPokemonList(prev => [dados, ...prev]);
     } catch  {
       setErro("Pokémon não encontrado 😢");
     } finally {
       setCarregando(false);
     }
   };
+
+  useEffect(() => {
+    if (pokemon) {
+      console.log(`Pokémon ${pokemon.name} carregado com sucesso!`);
+    }
+  }, [pokemon]);
 
   return (
     <div className="pokedex-container">
@@ -63,28 +60,9 @@ export default function Pokedex() {
       {carregando && <p className="pokedex-loading">Carregando...</p>}
       {erro && <p className="pokedex-error">{erro}</p>}
 
-      {pokemon && (
-        <div className="pokedex-card">
-          <h3 className="pokedex-name">{pokemon.name}</h3>
-          {pokemon.sprites.front_default && (
-            <img
-              src={pokemon.sprites.front_default}
-              alt={pokemon.name}
-              className="pokedex-image"
-            />
-          )}
-          <p>
-            <strong>Altura:</strong> {pokemon.height * 10} cm
-          </p>
-          <p>
-            <strong>Peso:</strong> {pokemon.weight / 10} kg
-          </p>
-          <p>
-            <strong>Tipos:</strong>{" "}
-            {pokemon.types.map((t) => t.type.name).join(" / ")}
-          </p>
-        </div>
-      )}
+      {pokemonsList.map((p) => (<PokeCard pokemon={p}/>))}
     </div>
+      // Map que exibi individualmente cada card Pokémon
+
   );
 }

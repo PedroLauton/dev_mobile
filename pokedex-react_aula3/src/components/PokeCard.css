@@ -1,0 +1,28 @@
+.pokedex-card {
+  margin-top: 20px;
+  background-color: #f0f0f0;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.pokedex-card-name {
+  text-transform: capitalize;
+  margin-bottom: 10px;
+}
+
+.pokedex-card-image {
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.pokedex-card-button-favorite {
+  display: block;
+  margin: 30px auto 10px;
+  padding: 10px;
+  font-weight: bold;
+  border-radius:5px;
+  border: none;
+  cursor: pointer;
+  justify-content: center;
+}

@@ -43,21 +43,3 @@
   padding: 8px;
   border-radius: 4px;
 }
-
-.pokedex-card {
-  margin-top: 20px;
-  background-color: #f8f8f8;
-  padding: 16px;
-  border-radius: 8px;
-  text-align: left;
-}
-
-.pokedex-name {
-  text-transform: capitalize;
-  margin-bottom: 10px;
-}
-
-.pokedex-image {
-  display: block;
-  margin: 0 auto 10px;
-}
