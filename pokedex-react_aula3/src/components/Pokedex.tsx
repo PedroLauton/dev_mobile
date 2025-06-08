@@ -10,8 +10,14 @@ export default function Pokedex() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [erro, setErro] = useState("");
   const [pokemonsList, setPokemonList] = useState<Pokemon[]>([]);
+
   const buscarPokemon = async () => {
     if (!nome.trim()) return;
+
+    if(pokemonsList.some(p => p.name.toLowerCase() === nome.toLowerCase())){
+      setErro("Pokémon já pesquisado! 😊");
+      return;
+    }
 
     setCarregando(true);
     setErro("");

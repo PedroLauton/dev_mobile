@@ -1,9 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Pokemon } from "../types/Pokemon.tsx";
 import "./PokeCard.css";
 
 export function PokeCard({pokemon}: {pokemon: Pokemon}){
     const [favorito, setFavorito] = useState(false);
+    
+    // Estado que indica se o valor salvo no localStorage já foi carregado.
+    const [carregado, setCarregado] = useState(false); 
+
+    // useEffect roda quando o nome do Pokémon muda. Ou seja, quando um novo Pokémon é renderizado na lista. Como a lista é copiada a cada inserção, toda vez esse useEffect roda uma vez.   
+     useEffect(() => {
+        const salvo = localStorage.getItem(pokemon.name);
+        setFavorito(salvo === "true");
+        setCarregado(true); // Marca que o carregamento ocorreu.
+    }, [pokemon.name]);
+
+    // useEffect salva o valor do estado 'favorito' no localStorage.
+    useEffect(() => {
+        // Somente salva se o valor obtido do localStorage foi carregado, visando não sobreescrever o dado.
+        if (carregado) {
+            localStorage.setItem(pokemon.name, favorito.toString());
+        }
+    }, [favorito, pokemon.name, carregado]);
 
     return(
         <div className="pokedex-card">
