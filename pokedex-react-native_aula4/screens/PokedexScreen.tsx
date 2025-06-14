@@ -9,24 +9,45 @@ export const PokedexScreen = () => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [offset, setOffSet] = useState(0);
   const [error, setError] = useState<string>('');
 
   const insets = useSafeAreaInsets();
+  const limit = 30;
 
   useEffect(() => {
-  const fetchData = async () => {
+    const fetchData = async () => {
+      try {
+        const list = await getPokemons(limit, offset); // primeiros 30 pokémons
+        const details = await Promise.all(list.map(p => getPokemonDetails(p.url)));
+        setPokemons(details);
+      } catch (err: any) {
+        setError(err.message || 'Erro desconhecido');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const loadMorePokemons = async () => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+    
+    const nextOffset = offset + limit;
+
     try {
-      const list = await getPokemons(30); // primeiros 30 pokémons
+      const list = await getPokemons(limit, nextOffset); 
       const details = await Promise.all(list.map(p => getPokemonDetails(p.url)));
-      setPokemons(details);
+      setPokemons(prev => [...prev, ...details]);
+      setOffSet(nextOffset);
     } catch (err: any) {
       setError(err.message || 'Erro desconhecido');
     } finally {
-      setIsLoading(false);
+      setIsLoadingMore(false);
     }
-  };
-  fetchData();
-}, []);
+  }
 
   const filtered = pokemons.filter(p => p.name.includes(search.toLowerCase()));
 
@@ -49,6 +70,8 @@ export const PokedexScreen = () => {
       ) : (<FlatList
         data={filtered}
         keyExtractor={item => item.id.toString()}
+        onEndReached={loadMorePokemons}
+        ListFooterComponent={isLoadingMore && search === '' ? (<ActivityIndicator size="large" color="#ff0000" />) : null}
         ListEmptyComponent={() => 
             pokemons.length == 0 ? (
                 <Text style={styles.titleSecondary}>Nenhum Pokémon para exibir nesse momento.</Text>
