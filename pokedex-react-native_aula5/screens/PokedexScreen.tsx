@@ -95,7 +95,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1',
     padding: 10,
     borderRadius: 8,
+    borderWidth: 2,       
     marginBottom: 20,
+    borderColor: '#888',
+    height: 40,
   },
   loadingContainer: {
     flexDirection: "row",
