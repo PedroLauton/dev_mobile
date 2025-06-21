@@ -1,11 +1,12 @@
 // screens/PokemonDetailsScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../types/Navigation';
 import { Pokemon } from '../types/Pokemon'; 
 import { getPokemonById } from '../services/api';
 import { capitalize } from '../utils/format'; //
+import { useFavorites } from '../contexts/FavoriteContext';
 
 // Especifica novamente o type passado para essa tela
 type PokemonDetailsScreenRouteProp = RouteProp<RootStackParamList, 'PokemonDetails'>;
@@ -20,6 +21,22 @@ export const PokemonDetailsScreen = () => {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Importa o contexto de Pokemons favoritos
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+
+  // Verifica se o pokémon atual é um favorito (só executa se 'pokemon' existir)
+  const favorite = pokemon ? isFavorite(pokemon.id) : false;
+
+    const handleToggleFavorite = () => {
+    if (pokemon) {
+      if (favorite) {
+        removeFavorite(pokemon.id);
+      } else {
+        addFavorite(pokemon.id);
+      }
+    }
+  };
 
   // Realiza a requisição para a API do pokémon com base no ID.
   useEffect(() => {
@@ -58,6 +75,11 @@ export const PokemonDetailsScreen = () => {
   // Retorna um ScrollView caso os dados ultrapassem o tamanho das telas
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
+      <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoriteButton}>
+        <Text style={styles.favoriteIcon}>{favorite ? '⭐' : '☆'}</Text>
+      </TouchableOpacity>
+
       <Image source={{ uri: pokemon.image }} style={styles.image} />
       <Text style={styles.name}>{capitalize(pokemon.name)}</Text>
       <Text style={styles.idText}>ID: #{pokemon.id}</Text>
@@ -72,7 +94,6 @@ export const PokemonDetailsScreen = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -85,8 +106,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: 20,
     color: 'red',
     fontSize: 16,
   },
@@ -94,7 +115,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginBottom: 16,
-    backgroundColor: '#f0f0f0', 
+    backgroundColor: '#f0f0f0',
     borderRadius: 100,
   },
   name: {
@@ -124,10 +145,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
     borderRadius: 4,
     marginBottom: 4,
+    textTransform: 'capitalize',
   },
-  detailsSection: {
-    marginTop: 16,
-    alignItems: 'flex-start',
-    width: '100%',
-  }
+  favoriteButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 1,
+  },
+  favoriteIcon: {
+    fontSize: 32,
+  },
 });
